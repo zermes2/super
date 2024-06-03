@@ -5,13 +5,15 @@
 
 using namespace std;
 
-// Base struct for products
-struct Product {
+// Abstract Base Class for products
+class Product {
+protected:
     int id;            // Product ID
     string name;       // Product name
     float price;       // Product price
     int quantity;      // Product quantity
 
+public:
     // Default constructor
     Product() : id(0), name(""), price(0.0), quantity(0) {}
 
@@ -21,10 +23,10 @@ struct Product {
     // Copy constructor
     Product(const Product& other) : id(other.id), name(other.name), price(other.price), quantity(other.quantity) {}
 
-    // Function for displaying product information
+    // Pure virtual function for displaying product information
     virtual void display() const = 0;
 
-    // Getter functions for id, price, and quantity
+    // Getter functions for id and quantity
     int getId() const { return id; }
     int getQuantity() const { return quantity; }
     float getPrice() const { return price; }
@@ -58,8 +60,9 @@ istream& operator>>(istream& is, Product& p) {
     return is;
 }
 
-// Derived struct for grocery products
-struct Grocery : public Product {
+// Derived class for grocery products
+class Grocery : public Product {
+public:
     // Default constructor
     Grocery() : Product() {}
 
@@ -72,8 +75,9 @@ struct Grocery : public Product {
     }
 };
 
-// Derived struct for electronics products
-struct Electronics : public Product {
+// Derived class for electronics products
+class Electronics : public Product {
+public:
     // Default constructor
     Electronics() : Product() {}
 
@@ -86,11 +90,13 @@ struct Electronics : public Product {
     }
 };
 
-// Struct to represent a customer order
-struct CustomerOrder {
+// Class to represent a customer order
+class CustomerOrder {
+private:
     int productId;  // Product ID
     int quantity;   // Quantity ordered
 
+public:
     // Constructor
     CustomerOrder(int id, int qty) : productId(id), quantity(qty) {}
 
@@ -99,11 +105,13 @@ struct CustomerOrder {
     int getQuantity() const { return quantity; }
 };
 
-// Struct to manage supermarket
-struct Supermarket {
+// Class to manage supermarket
+class Supermarket {
+private:
     vector<Product*> products;       // Vector to store products
     vector<CustomerOrder> orders;    // Vector to store customer orders
 
+public:
     // Function to add a product
     void addProduct(Product* p) {
         products.push_back(p);
@@ -126,7 +134,6 @@ struct Supermarket {
         file.close();
         cout << "Products saved to file!" << endl;
     }
-
     // Function to load products from a file
     void loadFromFile() {
         ifstream file("products_oop.txt");
@@ -137,6 +144,7 @@ struct Supermarket {
         file.close();
         cout << "Products loaded from file!" << endl;
     }
+
     // Function to add an order
     void addOrder(const CustomerOrder& order) {
         orders.push_back(order);
