@@ -1,11 +1,10 @@
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include <string>
 
 using namespace std;
 
-// Base Class for products
+// Abstract Base Class for products
 class Product {
 protected:
     int id;            // Product ID
@@ -29,7 +28,6 @@ public:
     // Getter functions for id and quantity
     int getId() const { return id; }
     int getQuantity() const { return quantity; }
-    float getPrice() const { return price; }
 
     // Overload insertion operator for output
     friend ostream& operator<<(ostream& os, const Product& p);
@@ -91,12 +89,18 @@ public:
 };
 
 // Class to represent a customer order
+
+
+// Class to represent a customer order
 class CustomerOrder {
 private:
     int productId;  // Product ID
     int quantity;   // Quantity ordered
 
 public:
+    // Default constructor
+    CustomerOrder() : productId(0), quantity(0) {}
+
     // Constructor
     CustomerOrder(int id, int qty) : productId(id), quantity(qty) {}
 
@@ -105,41 +109,48 @@ public:
     int getQuantity() const { return quantity; }
 };
 
+
+
 // Class to manage supermarket
 class Supermarket {
 private:
-    vector<Product*> products;       // Vector to store products
-    vector<CustomerOrder> orders;    // Vector to store customer orders
+    Product* products[100];       // Array to store products
+    int productCount;             // Number of products
+    CustomerOrder orders[100];    // Array to store customer orders
+    int orderCount;              // Number of orders
 
 public:
+    // Constructor
+    Supermarket() : productCount(0), orderCount(0) {}
+
     // Function to add a product
     void addProduct(Product* p) {
-        products.push_back(p);
+        products[productCount++] = p;
         cout << "Product added successfully!" << endl;
     }
 
     // Function to display all products
     void displayProducts() const {
-        for (const auto& p : products) {
-            p->display();
+        for (int i = 0; i < productCount; i++) {
+            products[i]->display();
         }
     }
-
     // Function to save products to a file
     void saveToFile() const {
         ofstream file("products_oop.txt");
-        for (const auto& p : products) {
-            file << *p << endl;
+        for (int i = 0; i < productCount; i++) {
+            file << *products[i] << endl;
         }
         file.close();
         cout << "Products saved to file!" << endl;
     }
+
     // Function to load products from a file
     void loadFromFile() {
         ifstream file("products_oop.txt");
         Product* p;
         while (file >> *p) {
-            products.push_back(p);
+            addProduct(p);
         }
         file.close();
         cout << "Products loaded from file!" << endl;
@@ -147,44 +158,27 @@ public:
 
     // Function to add an order
     void addOrder(const CustomerOrder& order) {
-        orders.push_back(order);
+        orders[orderCount++] = order;
         cout << "Order added successfully!" << endl;
-    }
-
-    // Function to get a product by ID
-    Product* getProductById(int id) const {
-        for (const auto& p : products) {
-            if (p->getId() == id) {
-                return p;
-            }
-        }
-        return nullptr; // Return nullptr if product not found
     }
 
     // Function to display all orders
     void displayOrders() const {
-        for (const auto& order : orders) {
-            Product* product = getProductById(order.getProductId());
-            if (product) {
-                float totalPrice = product->getPrice() * order.getQuantity();
-                cout << "Product ID: " << order.getProductId() << ", Quantity: " << order.getQuantity()
-                     << ", Total Price: $" << totalPrice << endl;
-            } else {
-                cout << "Product ID: " << order.getProductId() << " not found." << endl;
-            }
+        for (int i = 0; i < orderCount; i++) {
+            cout << "Product ID: " << orders[i].getProductId() << ", Quantity: " << orders[i].getQuantity() << endl;
         }
     }
 
     // Destructor to clean up dynamic memory
     ~Supermarket() {
-        for (auto& p : products) {
-            delete p;
+        for (int i = 0; i < productCount; i++) {
+            delete products[i];
         }
     }
 };
 
 int main() {
-    cout << "\t\t\t_________________________________________________________________________________\n";
+     cout << "\t\t\t_________________________________________________________________________________\n";
     cout << "\t\t\t|                                                                                |\n";
     cout << "\t\t\t|                              Supermarket Main Menu                             |\n";
     cout << "\t\t\t|                                                                                |\n";
@@ -226,6 +220,6 @@ int main() {
             case 8: cout << "Exiting..." << endl; break;
             default: cout << "Invalid choice!" << endl;
         }
-    } while (choice != 8);  // Loop until the user chooses to exit
+    } while (choice!= 8);  // Loop until the user chooses to exit
     return 0;
 }
